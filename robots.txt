@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://zero-dev-rgb.github.io/Zero/index.html
