@@ -1,0 +1,951 @@
+:root {
+    --primary: #00f2ff;
+    --secondary: #7000ff;
+    --bg-dark: #050508;
+    --glass-bg: rgba(20, 20, 30, 0.4);
+    --glass-border: rgba(0, 242, 255, 0.15);
+    --text-main: #e2e8f0;
+    --text-dim: #94a3b8;
+}
+
+* {
+    margin: 0; padding: 0; box-sizing: border-box;
+    cursor: none !important; /* قفل الماوس العادي خالص */
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+}
+body::after {
+    content: "";
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-image: url('https://grainy-gradients.vercel.app/noise.svg');
+    opacity: 0.05; /* خفيفة جداً */
+    pointer-events: none;
+    z-index: 9999;
+}
+/* ================= Animations & Background ================= */
+.background-animation {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+    overflow: hidden; background: #020204;
+}
+.glow-blob {
+    position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.4;
+    animation: floatBlob 10s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+}
+.blob-1 { width: 400px; height: 400px; background: var(--secondary); top: -10%; left: -10%; }
+.blob-2 { width: 300px; height: 300px; background: var(--primary); bottom: -10%; right: -10%; animation-delay: -5s; }
+
+@keyframes floatBlob {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(50px, 50px) scale(1.2); }
+}
+
+/* ================= Custom Cursor (M) ================= */
+.cursor {
+    width: 30px; height: 30px; background: var(--primary);
+    border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; color: #000; font-size: 16px;
+    box-shadow: 0 0 15px var(--primary), 0 0 30px var(--primary);
+    transition: transform 0.1s ease, background 0.3s;
+    transform: translate(-50%, -50%); /* Center cursor exactly */
+}
+.cursor-follower {
+    width: 60px; height: 60px; border: 2px dashed var(--secondary);
+    border-radius: 50%; position: fixed; pointer-events: none; z-index: 9998;
+    transition: width 0.3s, height 0.3s, background 0.3s;
+    transform: translate(-50%, -50%); animation: rotateDash 5s linear infinite;
+}
+@keyframes rotateDash { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+
+/* Cursor Hover States (بيكبر وبينور لما تقف على زرار) */
+.cursor.hovering { transform: translate(-50%, -50%) scale(1.5); background: #fff; box-shadow: 0 0 40px #fff; }
+.cursor-follower.hovering { width: 90px; height: 90px; border-style: solid; border-color: var(--primary); background: rgba(0, 242, 255, 0.1); }
+.btn, .logo, .contact-item i {
+    transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1); /* ضروري عشان الـ transform يشتغل صح */}
+
+/* ================= Nav & Links ================= */
+/* --- التعديل الأساسي للـ Nav --- */
+.main-nav {
+    position: fixed;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 95%;
+    max-width: 1200px;
+    z-index: 2000; /* أعلى من أي شيء آخر */
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 40px;
+    padding: 12px 30px;
+}
+
+/* زرار الموبايل */
+.mobile-menu-btn {
+    display: none;
+    flex-direction: column;
+    gap: 6px;
+    cursor: pointer;
+    z-index: 2001;
+}
+
+.mobile-menu-btn span {
+    width: 30px;
+    height: 3px;
+    background: var(--primary);
+    border-radius: 10px;
+    transition: 0.3s;
+}
+
+/* القائمة الجانبية */
+/* القائمة الجانبية - تعديل عشان تظهر كأنها لوحة زجاجية طايرة */
+.side-menu {
+    position: fixed;
+    top: 100px; /* نزلتها شوية عشان متغطيش على الـ Nav الأساسي */
+    right: -110%; /* أبعد شوية عشان نضمن إن الظل ميظهرش وهي مقفولة */
+    width: 280px;
+    height: 70vh; /* زي ما طلبت */
+    background: rgba(20, 20, 30, 0.8); /* خليتها أغمق شوية عشان النصوص تبان */
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    z-index: 1500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* لمسات جمالية */
+    border-radius: 30px; 
+    margin-right: 20px; /* مسافة من حافة الشاشة لما تفتح */
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+.side-menu.active {
+    right: 0; /* هتظهر وتثبت بمسافة الـ margin اللي فوق */
+}
+
+/* تعديل اللوجو في الموبايل عشان يجي في النص بالظبط */
+@media (max-width: 768px) {
+    .nav-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+    }
+    
+    .logo {
+        font-size: 1.5rem; /* تصغير بسيط للموبايل */
+        flex-grow: 1;
+        text-align: right; /* عشان المحاذاة العربي */
+    }
+
+    .mobile-menu-btn {
+        display: flex; /* إظهار الزرار */
+        margin-right: 15px;
+    }
+}
+
+/* تحسين شكل الروابط داخل القائمة */
+.side-links a {
+    color: var(--text-main); /* غيرت الأزرق لـ text-main عشان الرؤية */
+    text-decoration: none;
+    font-size: 1.3rem;
+    font-weight: 600;
+    transition: 0.3s;
+    display: block;
+    padding: 10px;
+}
+
+.side-links a:hover {
+    color: var(--primary);
+    transform: scale(1.1);
+    text-shadow: 0 0 15px var(--primary);
+}
+.logo { font-size: 1.8rem; text-align: center; font-weight: 800; color: #fff; }
+.pulse-dot { color: var(--primary); animation: pulseText 1.5s infinite; }
+@keyframes pulseText { 0%, 100% { opacity: 1; text-shadow: 0 0 10px var(--primary); } 50% { opacity: 0.5; text-shadow: none; } }
+
+.nav-links { display: flex; justify-content: center; list-style: none; gap: 30px; }
+.nav-links a { color: var(--text-dim); text-decoration: none; position: relative; font-weight: 600; transition: 0.3s; }
+.nav-links a:hover { color: #fff; text-shadow: 0 0 10px var(--primary); }
+.hover-underline::after {
+    content: ''; position: absolute; width: 0; height: 2px; bottom: -5px; left: 0;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    transition: width 0.3s ease;
+}
+.hover-underline:hover::after { width: 100%; }
+
+/* ================= Hero Section & Profile ================= */
+.hero-section { height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center; }
+.hero-content { display: flex; flex-direction: column; align-items: center; }
+
+/* Profile Picture Animation */
+.profile-wrapper { position: relative; margin-bottom: 30px; }
+.profile-img {
+    width: 200px; height: 200px; border-radius: 50%; object-fit: cover;
+    border: 4px solid rgba(0, 242, 255, 0.5); z-index: 2; position: relative;
+    box-shadow: 0 0 30px rgba(0,0,0,0.8); transition: 0.5s;
+}
+.profile-glow {
+    position: absolute; top: -10px; left: -10px; right: -10px; bottom: -10px;
+    background: linear-gradient(45deg, var(--primary), var(--secondary), var(--primary));
+    border-radius: 50%; z-index: 1; filter: blur(20px); opacity: 0.7;
+    animation: spinGlow 4s linear infinite;
+}
+.profile-wrapper:hover .profile-img { transform: scale(1.05); border-color: var(--primary); }
+.profile-wrapper:hover .profile-glow { opacity: 1; filter: blur(25px); }
+@keyframes spinGlow { 100% { transform: rotate(360deg); } }
+
+.colorful-text {
+    /* خلينا اللون يبدأ بـ primary وينتهي بـ primary عشان لما يعمل Loop ميبانش أي قطع */
+    background: linear-gradient(to right, var(--primary), var(--secondary), var(--primary));
+    background-size: 200% auto;
+    
+    /* تفريغ النص عشان يظهر الخلفية */
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    
+    font-size: 5rem;
+    display: inline-block;
+    
+    /* تشغيل الأنميشن */
+    animation: shine 3s linear infinite;
+}
+
+/* حددنا نقطة البداية والنهاية بوضوح عشان المتصفحات متتشتتش */
+@keyframes shine { 
+    0% { background-position: 0% center; }
+    100% { background-position: -200% center; } 
+}
+/* Buttons */
+.btn { padding: 15px 35px; border-radius: 50px; font-weight: bold; text-decoration: none; transition: 0.4s; display: inline-block; margin: 10px; position: relative; overflow: hidden; }
+.btn-primary { background: var(--primary); color: #000; box-shadow: 0 0 20px rgba(0, 242, 255, 0.4); border: 2px solid transparent; }
+.btn-primary:hover { background: transparent; color: var(--primary); border-color: var(--primary); box-shadow: 0 0 40px var(--primary) inset; transform: translateY(-5px); }
+.btn-outline { border: 2px solid var(--secondary); color: #fff; box-shadow: 0 0 20px rgba(112, 0, 255, 0.2); }
+.btn-outline:hover { background: var(--secondary); box-shadow: 0 0 40px var(--secondary); transform: translateY(-5px); }
+
+/* ================= Cards & 3D Tilt (مهاراتي ومشاريعي) ================= */
+.section { padding: 120px 0; height: 100vh; }
+.section-title { font-size: 3rem; margin-bottom: 60px; text-align: center; color: #fff; text-shadow: 0 0 20px rgba(255,255,255,0.2); }
+
+.skills-grid, .projects-grid, .certificates-grid, .contact-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px;
+}
+
+.tilt-card {
+    background: var(--glass-bg); padding: 40px 30px; border-radius: 20px;
+    border: 1px solid var(--glass-border); text-align: center;
+    position: relative; overflow: hidden; backdrop-filter: blur(10px);
+    transform-style: preserve-3d; /* Required for 3D inner elements */
+    transition: border 0.3s;
+}
+.tilt-card:hover { border-color: var(--primary); }
+
+/* The Hover Glow inside card */
+.card-glow {
+    position: absolute; width: 100px; height: 100vh; background: var(--primary);
+    border-radius: 50%; filter: blur(60px); top: -50px; left: -50px; opacity: 0; transition: 0.5s; pointer-events: none;
+}
+.tilt-card:hover .card-glow { opacity: 0.5; top: 20%; left: 20%; }
+
+/* Make elements pop out in 3D */
+.tilt-card h3, .tilt-card p, .float-icon { transform: translateZ(30px); }
+.float-icon { font-size: 4rem; color: var(--primary); margin-bottom: 20px; display: inline-block; filter: drop-shadow(0 0 10px var(--primary)); transition: 0.3s; }
+.tilt-card:hover .float-icon { transform: translateZ(50px) scale(1.1); color: #fff; }
+
+/* Project Cards Specifics */
+.project-card { padding: 0; }
+.project-image { height: 220px; background-size: cover; background-position: center; transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.project-card:hover .project-image { transform: scale(1.1) rotate(2deg); }
+.project-info { padding: 25px; transform: translateZ(40px); background: linear-gradient(to top, var(--bg-dark), transparent); position: absolute; bottom: 0; width: 100%; text-align: right; }
+.view-project-btn { display: inline-block; margin-top: 15px; color: var(--primary); text-decoration: none; font-weight: bold; }
+.view-project-btn:hover { color: #fff; text-shadow: 0 0 10px var(--primary); }
+
+/* Contact Items */
+.contact-item { padding: 25px; display: flex; align-items: center; gap: 15px; font-size: 1.2rem; }
+.contact-item i { font-size: 2rem; color: var(--secondary); transition: 0.3s; }
+.contact-item:hover i { color: var(--primary); transform: scale(1.2) rotate(10deg); filter: drop-shadow(0 0 10px var(--primary)); }
+/* تنسيق إضافي للشهادات */
+.cert-year {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 5px 15px;
+    background: rgba(0, 242, 255, 0.1);
+    border: 1px solid var(--primary);
+    border-radius: 20px;
+    color: var(--primary);
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+/* تنسيق إضافي لقسم التواصل */
+.contact-item {
+    text-decoration: none;
+    color: var(--text-main);
+    display: flex !important;
+    align-items: center;
+    gap: 20px;
+    text-align: right !important; /* عشان المحاذاة العربي */
+    padding: 30px !important;
+}
+
+.contact-text span {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--text-dim);
+}
+
+.contact-text p {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: var(--primary);
+}
+
+.contact-item i {
+    font-size: 2.5rem;
+    color: var(--secondary);
+    transition: 0.4s;
+}
+
+.contact-item:hover i {
+    color: var(--primary);
+    transform: scale(1.2) rotate(-10deg);
+}
+
+/* أنميشن قلب الفوتر */
+.pulse-icon {
+    animation: heartBeat 1.5s infinite;
+    display: inline-block;
+}
+
+@keyframes heartBeat {
+    0% { transform: scale(1); }
+    15% { transform: scale(1.3); }
+    30% { transform: scale(1); }
+    45% { transform: scale(1.15); }
+    60% { transform: scale(1); }
+}
+/* --- تنسيق الفوتر الخرافي --- */
+footer {
+    padding: 60px 0;
+    margin-top: 50px;
+    background: linear-gradient(to top, rgba(112, 0, 255, 0.05), transparent);
+    border-top: 1px solid var(--glass-border);
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+}
+
+/* إضافة توهج خلف الفوتر */
+footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 2px;
+    background: var(--primary);
+    box-shadow: 0 0 20px var(--primary), 0 0 40px var(--primary);
+}
+
+footer .container {
+    position: relative;
+    z-index: 2;
+}
+
+footer p {
+    font-size: 1.1rem;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    transition: 0.5s;
+}
+
+/* تأثير عند الوقوف على نص الفوتر */
+footer p:hover {
+    color: #fff;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    transform: scale(1.02);
+}
+
+/* أنميشن القلب النابض */
+.pulse-icon {
+    display: inline-block;
+    margin: 0 5px;
+    color: #ff0055;
+    filter: drop-shadow(0 0 8px #ff0055);
+    animation: heartBeatCustom 1.2s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+@keyframes heartBeatCustom {
+    0% { transform: scale(1); }
+    15% { transform: scale(1.4) rotate(-10deg); }
+    30% { transform: scale(1) rotate(0deg); }
+    45% { transform: scale(1.2) rotate(10deg); }
+    60% { transform: scale(1) rotate(0deg); }
+}
+
+/* خلفية ضوئية ناعمة جداً تحت الكلام */
+footer::after {
+    content: '';
+    position: absolute;
+    bottom: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 300px;
+    height: 100px;
+    background: var(--secondary);
+    filter: blur(80px);
+    opacity: 0.2;
+    pointer-events: none;
+}
+
+/* لجعل الفوتر متجاوب وسلس */
+@media (max-width: 768px) {
+    footer {
+        padding: 40px 20px;
+    }
+    footer p {
+        font-size: 0.9rem;
+    }
+}
+/* --- تنسيق قسم عني (About) --- */
+#about {
+    position: relative;
+    overflow: hidden;
+}
+
+/* استخدام الخط الجديد للفقرات */
+.about-content p {
+    font-family: 'Cairo', sans-serif; /* الخط الجديد */
+    font-size: 1.2rem;
+    color: var(--text-main);
+    margin-bottom: 20px;
+    line-height: 1.8;
+    position: relative;
+    z-index: 2;
+}
+
+/* تنسيق لوحة الزجاج (Glass Panel) */
+.glass-panel {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 30px;
+    padding: 50px;
+    position: relative;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* تأثير الإضاءة المتحركة على الحواف عند الهوفر */
+.glass-panel::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 30px;
+    padding: 2px; /* سمك الخط المنور */
+    background: linear-gradient(45deg, transparent, var(--primary), transparent, var(--secondary), transparent);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: 0.5s;
+}
+
+.glass-panel:hover {
+    transform: translateY(-10px) scale(1.02);
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(0, 242, 255, 0.3);
+    box-shadow: 0 0 30px rgba(0, 242, 255, 0.1);
+}
+
+.glass-panel:hover::before {
+    opacity: 1;
+    animation: borderRotate 3s linear infinite;
+}
+
+/* أنميشن دوران الألوان حول الكارت */
+@keyframes borderRotate {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+}
+
+/* إضافة أيقونة كود خفيفة في الخلفية */
+.glass-panel::after {
+    content: '</>';
+    position: absolute;
+    bottom: 10px;
+    left: 20px;
+    font-size: 5rem;
+    color: rgba(0, 242, 255, 0.05);
+    font-family: monospace;
+    font-weight: bold;
+    pointer-events: none;
+}
+
+/* استجابة الشاشات الصغيرة */
+/* ================= Media Queries for Mobile & Touch ================= */
+
+@media (max-width: 991px) {
+    .colorful-text {
+        font-size: 3.5rem; /* تصغير العنوان الكبير في التابلت */
+    }
+}
+
+ /* 7. إخفاء القائمة العلوية أو تظبيطها (يفضل إخفاؤها لو مش عامل Menu للموبايل) */
+    
+/* ================= Mobile Layout Fixes ================= */
+@media (max-width: 768px) {
+    /* 1. إلغاء الارتفاع الثابت للسكاشن عشان المحتوى ميركبش فوق بعضه */
+    .section, section {
+        height: auto !important; 
+        min-height: 100vh;
+        padding: 80px 15px 40px 15px !important; /* مساحة أمان علوية وسفلية */
+        display: block !important; /* تحويله لـ block بدلاً من flex لو كان عامل مشاكل */
+    }
+
+    /* 2. إصلاح الهيرو (الرئيسية) */
+    .hero-section {
+        height: auto !important;
+        min-height: 100vh;
+        padding-top: 120px !important;
+    }
+
+    /* 3. إلغاء أنميشن الطيران (Floating) في الموبايل لأنها بتسبب تداخل في اللمس والمساحات */
+    .tilt-card, .profile-wrapper, .logo, .section-divider, section {
+        animation: none !important;
+        transform: none !important;
+    }
+
+    /* 4. تظبيط العناوين الكبيرة */
+    .colorful-text {
+        font-size: 2.8rem !important;
+        line-height: 1.2;
+        display: block;
+        margin-top: 10px;
+    }
+
+    .section-title {
+        font-size: 2rem !important;
+        margin-bottom: 30px !important;
+    }
+
+    /* 5. تظبيط الجريد (الشبكة) للمهارات والمشاريع */
+    .skills-grid, .projects-grid, .certificates-grid, .contact-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 20px !important;
+    }
+
+    .tilt-card {
+        width: 100% !important;
+        margin: 0 auto;
+        padding: 30px 20px !important;
+    }
+
+    /* 6. إصلاح لوحة "عني" (About) */
+    .glass-panel {
+        padding: 25px 15px !important;
+        margin: 0 !important;
+        width: 100% !important;
+    }
+
+    .about-content p {
+        font-size: 1.1rem !important;
+        text-align: center !important;
+    }
+
+    /* 7. تظبيط صورة البروفايل */
+    .profile-img {
+        width: 150px !important;
+        height: 150px !important;
+    }
+
+    /* 8. إخفاء العناصر التي تسبب زحمة */
+    .cursor, .cursor-follower {
+        display: none !important;
+    }
+    
+    * {
+        cursor: auto !important; /* استعادة الماوس الطبيعي للتاتش */
+    }
+
+    /* 9. إصلاح الفواصل (Dividers) */
+    .section-divider {
+        width: 90% !important;
+        padding: 20px 0 !important;
+    }
+}
+
+/* إصلاح إضافي للشاشات الصغيرة جداً (iPhone SE مثلاً) */
+@media (max-width: 400px) {
+    .colorful-text {
+        font-size: 2.2rem !important;
+    }
+    .btn {
+        padding: 12px 20px !important;
+        width: 100%;
+        margin: 5px 0 !important;
+    }
+    .main-nav {
+        top: 10px; /* تقليل المسافة من فوق */
+        width: 100%; /* تصغير العرض شوية عشان ميلمسش الحواف */
+        padding: 8px 20px; /* تقليل المساحة الداخلية */
+        border-radius: 25px; /* تنعيم الحواف لتناسب الشاشات الصغيرة */
+    }
+
+    .logo {
+        font-size: 1.3rem; /* تصغير اللوجو عشان مياخدش مكان كبير */
+    }
+
+    .nav-links {
+        display: none; /* إخفاء اللينكات التقليدية في الموبايل */
+    }
+    
+    /* إذا كنت تريد إظهار زرار القائمة (Hamburger) يمكن إضافته هنا */
+    .nav-content {
+        justify-content: center; /* توسيط اللوجو في الموبايل ليعطي شكل أشيك */
+    }
+
+    
+    .profile-img {
+        width: 150px;
+        height: 150px;
+    }
+    
+    .project-image {
+        height: 180px;
+    }
+}
+
+/* إضافة حماية إضافية للأجهزة اللي بتدعم التاتش فقط */
+@media (hover: none) {
+    .cursor, 
+    .cursor-follower {
+        display: none !important;
+    }
+    * {
+        cursor: auto !important;
+    }
+    .desktop-menu {
+        display: none; /* إخفاء منيو الديسكتوب */
+    }
+
+    .mobile-menu-btn {
+        display: flex; /* إظهار زرار الهامبرجر */
+    }
+
+    /* تحويل الزرار لشكل X عند الفتح */
+    .mobile-menu-btn.open span:nth-child(1) { transform: rotate(45deg) translate(6px, 6px); }
+    .mobile-menu-btn.open span:nth-child(2) { opacity: 0; }
+    .mobile-menu-btn.open span:nth-child(3) { transform: rotate(-45deg) translate(6px, -7px); }
+}
+/* تنسيق خاص للأيقونات المزدوجة في كارت الـ HTML/CSS */
+.dual-icons {
+    display: flex;
+    justify-content: center;
+    gap: 15px; /* مسافة بين الأيقونتين */
+    font-size: 3.5rem; /* نفس حجم الأيقونات الباقية */
+    color: var(--primary);
+    filter: drop-shadow(0 0 10px var(--primary)); /* إضافة التوهج */
+    transition: 0.3s;
+}
+
+/* لضمان أن الأيقونات داخل الـ dual-icons تأخذ نفس اللون والحجم */
+.dual-icons i {
+    display: inline-block;
+}
+
+/* تأثير عند الهوفر على الكارت */
+.tilt-card:hover .dual-icons {
+    color: #fff;
+    filter: drop-shadow(0 0 20px var(--primary));
+    transform: translateZ(50px) scale(1.1);
+}
+/* ================= Animations & Background ================= */
+.background-animation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+    background: #020204; /* لون احتياطي لو الصورة محملتش */
+
+    /* --- إضافة الصورة كخلفية --- */
+    background-image: url('https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+    background-size: cover; /* لتغطية المساحة بالكامل */
+    background-position: center center; /* لتوسيط الصورة */
+    background-repeat: no-repeat; /* لعدم تكرار الصورة */
+    
+    /* --- إضافة طبقة شفافة فوق الصورة لتعتميها وتناسب الألوان --- */
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6); /* طبقة سوداء شفافة لتعتيم الصورة */
+        backdrop-filter: blur(3px); /* ضبابية خفيفة للخلفية */
+        -webkit-backdrop-filter: blur(3px);
+    }
+}
+
+/* الألوان المتوهجة هتفضل شغالة فوق الصورة */
+.glow-blob {
+    position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.3; /* قللت الأوباسيتي شوية */
+    animation: floatBlob 10s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+}
+.blob-1 { width: 400px; height: 400px; background: var(--secondary); top: -10%; left: -10%; }
+.blob-2 { width: 300px; height: 300px; background: var(--primary); bottom: -10%; right: -10%; animation-delay: -5s; }
+
+@keyframes floatBlob {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(50px, 50px) scale(1.2); }
+}
+.section-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    padding: 40px 0;
+    width: 80%;
+    margin: 0 auto;
+    opacity: 0.6;
+}
+
+.section-divider .line {
+    height: 1px;
+    flex-grow: 1;
+    background: linear-gradient(90deg, transparent, var(--primary), transparent);
+    box-shadow: 0 0 10px var(--primary);
+}
+
+.code-dots {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--glass-bg);
+    padding: 8px 15px;
+    border-radius: 20px;
+    border: 1px solid var(--glass-border);
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.red { background: #ff5f56; box-shadow: 0 0 5px #ff5f56; }
+.yellow { background: #ffbd2e; box-shadow: 0 0 5px #ffbd2e; }
+.green { background: #27c93f; box-shadow: 0 0 5px #27c93f; }
+
+.code-tag {
+    margin-right: 10px;
+    font-family: monospace;
+    color: var(--primary);
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+/* --- تأثير مسحة الضوء التلقائية --- */
+.tilt-card {
+    position: relative;
+    overflow: hidden; /* ضروري جداً عشان الومضة متخرجش بره الكارت */
+}
+
+/* بنستخدم ::after عشان نعمل طبقة الضوء فوق الكارت */
+.tilt-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -150%; /* البداية من بره الكارت على الشمال */
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(
+        to right, 
+        transparent, 
+        rgba(255, 255, 255, 0.2), 
+        rgba(0, 242, 255, 0.4), /* لون الـ primary بتاعك */
+        rgba(255, 255, 255, 0.2), 
+        transparent
+    );
+    transform: skewX(-25deg); /* ميل الومضة عشان تبان واقعية */
+    pointer-events: none; /* عشان متغطيش على الكليك بتاع الماوس */
+    
+    /* تشغيل الأنميشن كل 3 ثواني */
+    animation: autoShine 2s infinite ease-in-out;
+}
+
+/* تعريف حركة الومضة */
+@keyframes autoShine {
+    0% {
+        left: -150%;
+    }
+    30% {
+        left: 150%; /* المسحة بتعدي في أول ثانية */
+    }
+    100% {
+        left: 150%; /* وباقي الـ 3 ثواني انتظار (Pause) */
+    }
+}
+/* --- أنميشن الطيران العام --- */
+@keyframes floating {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-15px); } /* الحركة للأعلى بمسافة 15 بكسل */
+    100% { transform: translateY(0px); }
+}
+
+/* تطبيق الأنميشن على السكاشن */
+section {
+    animation: floating 6s ease-in-out infinite;
+}
+
+/* تأخير الأنميشن بين السكاشن عشان ميبقوش بيتحركوا كلهم في نفس اللحظة */
+section:nth-child(even) {
+    animation-delay: 1s;
+    animation-duration: 7s; /* سرعة مختلفة شوية عشان الطبيعية */
+}
+
+section:nth-child(odd) {
+    animation-delay: 2s;
+}
+
+/* تطبيق الأنميشن على الكروت واللوجو والبروفايل */
+.tilt-card, .profile-wrapper, .logo, .section-divider {
+    animation: floating 4s ease-in-out infinite;
+}
+
+/* جعل الكروت تطير بأوقات مختلفة */
+.tilt-card:nth-child(2n) { animation-delay: 0.5s; }
+.tilt-card:nth-child(3n) { animation-delay: 1.5s; }
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-dark); }
+::-webkit-scrollbar-thumb { 
+    background: linear-gradient(var(--primary), var(--secondary)); 
+    border-radius: 10px; 
+}
+#loader {
+    position: fixed;
+    inset: 0;
+    /* خلفية شفافة غامقة مع تغبيش (Blur) */
+    background: rgba(5, 5, 8, 0.8); 
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    /* الأفضل في الخروج الـ fade-out العادي طالما الخلفية شفافة */
+    transition: opacity 0.8s ease;
+}
+
+.name-container {
+    display: flex;
+    gap: 8px;
+    /* التأكيد على الترتيب من اليسار لليمين */
+    flex-direction: row; 
+}
+
+.letter {
+    font-size: 4rem;
+    font-weight: 900;
+    color: transparent;
+    -webkit-text-stroke: 1px var(--primary);
+    display: inline-block;
+    /* تأكد إن الفونت ده موجود عندك أو استخدم sans-serif */
+    font-family: 'Poppins', Arial, sans-serif;
+    transform: translateY(20px);
+    opacity: 0;
+    animation: revealLetter 0.5s forwards;
+}
+
+.letter-space { width: 15px; }
+
+/* أنميشن ظهور الحروف بالترتيب */
+.letter:nth-child(1) { animation-delay: 0.1s; }
+.letter:nth-child(2) { animation-delay: 0.2s; }
+.letter:nth-child(3) { animation-delay: 0.3s; }
+.letter:nth-child(4) { animation-delay: 0.4s; }
+.letter:nth-child(6) { animation-delay: 0.5s; }
+.letter:nth-child(7) { animation-delay: 0.6s; }
+.letter:nth-child(8) { animation-delay: 0.7s; }
+.letter:nth-child(9) { animation-delay: 0.8s; }
+.letter:nth-child(10) { animation-delay: 0.9s; }
+
+@keyframes revealLetter {
+    to {
+        transform: translateY(0);
+        opacity: 1;
+        color: var(--primary);
+        text-shadow: 0 0 20px var(--primary);
+    }
+}
+
+.loader-line {
+    width: 0;
+    height: 2px;
+    background: var(--primary);
+    margin-top: 20px;
+    box-shadow: 0 0 15px var(--primary);
+    animation: lineGrow 2s ease-in-out forwards;
+}
+
+@keyframes lineGrow {
+    to { width: 250px; }
+}
+
+/* تأثير الخروج النظيف */
+#loader.fade-out {
+    opacity: 0;
+    pointer-events: none;
+}/* تخصيص المسار الخلفي */
+::-webkit-scrollbar {
+    width: 10px;
+}
+::-webkit-scrollbar-track {
+    background: #050508; 
+}
+/* تخصيص الجزء اللي بيتحرك */
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(var(--secondary), var(--primary));
+    border-radius: 10px;
+    border: 2px solid #050508; /* بيعمل فراغ شيك حول الشريط */
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary); /* يفتح لما تقف عليه */
+}/* تخصيص المسار الخلفي */
+::-webkit-scrollbar {
+    width: 10px;
+}
+::-webkit-scrollbar-track {
+    background: #050508; 
+}
+/* تخصيص الجزء اللي بيتحرك */
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(var(--secondary), var(--primary));
+    border-radius: 10px;
+    border: 2px solid #050508; /* بيعمل فراغ شيك حول الشريط */
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary); /* يفتح لما تقف عليه */
+}
