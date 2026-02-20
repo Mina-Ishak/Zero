@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://mina-ishak.github.io/Zero/
